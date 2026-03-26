@@ -1,0 +1,34 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "master" ]  # Kích hoạt workflow khi có commit đẩy lên nhánh main
+  pull_request:
+    branches: [ "master" ]  # Kích hoạt workflow khi có pull request nhắm tới nhánh main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Chạy job trên môi trường Ubuntu mới nhất
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]  # Chạy job với 3 phiên bản Node.js khác nhau
+
+    steps:
+      # Bước 1: Checkout mã nguồn từ repository để đảm bảo toàn bộ source code đã sẵn sàng cho các step tiếp theo
+      - uses: actions/checkout@v4
+
+      # Bước 2: Cài đặt Node.js theo phiên bản được chỉ định từ matrix, đồng thời kích hoạt cache cho npm
+      - name: Use Node.js 
+        uses: actions/setup-node@v4
+        with:
+          node-version: node:22
+          cache: 'npm'
+
+      # Bước 3: Cài đặt các dependency của dự án
+      - name: Install Dependencies
+        run: npm i 
+
+      # Bước 4: Build dự án
+      - name: Run lint
+        run: npm run lint
